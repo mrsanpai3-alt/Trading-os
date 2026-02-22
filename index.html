@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TraderOS Lite</title>
+    <title>TraderOS - Performance Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -14,86 +13,88 @@
         }
         h1 {
             text-align: center;
-            color: #22d3ee;
+            color: #38bdf8;
         }
         .card {
             background: #1e293b;
             padding: 20px;
             margin: 15px 0;
-            border-radius: 12px;
+            border-radius: 10px;
         }
-        input, select, button {
+        input, button {
             padding: 10px;
             margin: 5px 0;
             width: 100%;
-            border-radius: 6px;
+            border-radius: 5px;
             border: none;
         }
         button {
-            background: #22d3ee;
+            background: #38bdf8;
             font-weight: bold;
             cursor: pointer;
         }
         table {
             width: 100%;
-            border-collapse: collapse;
             margin-top: 10px;
+            border-collapse: collapse;
         }
         th, td {
-            padding: 10px;
+            padding: 8px;
             text-align: center;
             border-bottom: 1px solid #334155;
-        }
-        .news-item {
-            background: #0f172a;
-            padding: 10px;
-            border-left: 4px solid #22d3ee;
-            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-<h1>TraderOS Lite</h1>
+<h1>TraderOS</h1>
 
 <div class="card">
     <h2>Add Trading Account</h2>
     <input type="text" id="accountName" placeholder="Account Name">
-    <select id="accountType">
-        <option value="Funded">Funded</option>
-        <option value="Real">Real</option>
-    </select>
-    <input type="number" id="balance" placeholder="Current Balance">
+    <input type="number" id="balance" placeholder="Starting Balance">
     <button onclick="addAccount()">Add Account</button>
+</div>
+
+<div class="card">
+    <h2>Add Trade</h2>
+    <input type="text" id="tradeAccount" placeholder="Account Name">
+    <input type="number" id="profit" placeholder="Profit / Loss">
+    <button onclick="addTrade()">Add Trade</button>
 </div>
 
 <div class="card">
     <h2>Accounts Overview</h2>
     <table id="accountTable">
         <tr>
-            <th>Name</th>
-            <th>Type</th>
+            <th>Account</th>
             <th>Balance</th>
         </tr>
     </table>
 </div>
 
-<div class="card">
-    <h2>High Impact Market News</h2>
-    <div id="newsContainer"></div>
-</div>
-
 <script>
-let accounts = [];
+let accounts = {};
 
 function addAccount() {
     let name = document.getElementById("accountName").value;
-    let type = document.getElementById("accountType").value;
     let balance = parseFloat(document.getElementById("balance").value);
 
     if(name && balance) {
-        accounts.push({name, type, balance});
+        accounts[name] = balance;
         updateTable();
+    }
+}
+
+function addTrade() {
+    let name = document.getElementById("tradeAccount").value;
+    let profit = parseFloat(document.getElementById("profit").value);
+
+    if(accounts[name] !== undefined) {
+        accounts[name] += profit;
+        updateTable();
+    } else {
+        alert("Account not found!");
     }
 }
 
@@ -101,41 +102,20 @@ function updateTable() {
     let table = document.getElementById("accountTable");
     table.innerHTML = `
         <tr>
-            <th>Name</th>
-            <th>Type</th>
+            <th>Account</th>
             <th>Balance</th>
         </tr>
     `;
 
-    accounts.forEach(acc => {
+    for(let name in accounts) {
         table.innerHTML += `
             <tr>
-                <td>${acc.name}</td>
-                <td>${acc.type}</td>
-                <td>$${acc.balance.toFixed(2)}</td>
+                <td>${name}</td>
+                <td>$${accounts[name].toFixed(2)}</td>
             </tr>
         `;
-    });
+    }
 }
-
-/* Demo News (Replace with API later) */
-let news = [
-    "USD High Impact CPI Data Release Today",
-    "Federal Reserve Interest Rate Decision Coming",
-    "Gold Surges on Inflation Fears",
-    "Bitcoin Volatility Spike Expected"
-];
-
-function loadNews() {
-    let container = document.getElementById("newsContainer");
-    news.forEach(item => {
-        container.innerHTML += `
-            <div class="news-item">${item}</div>
-        `;
-    });
-}
-
-loadNews();
 </script>
 
 </body>
